@@ -5,7 +5,7 @@ export default {
   config() {
     return {
       name: "blog",
-      region: "ap-northeast-1",
+      region: "ap-southeast-1",
     }
   },
   stacks(app) {
