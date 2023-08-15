@@ -4,9 +4,21 @@ import { css } from "@emotion/react"
 import { Theme } from "@mui/material"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
+import { EditorContent, useEditor } from "@tiptap/react"
+import StarterKit from "@tiptap/starter-kit"
+import { TextStyle } from "@tiptap/extension-text-style"
+import { Color } from "@tiptap/extension-color"
+import { NextImage } from "@/client/common/tiptap.util"
+import { Youtube } from "@tiptap/extension-youtube"
 
 export const Article = memo(function Article({ post }: { post: Post }) {
   const session = useSession()
+
+  const editor = useEditor({
+    extensions: [StarterKit, TextStyle, Color, NextImage, Youtube],
+    content: JSON.parse(post.content ?? null),
+    editable: false,
+  })
 
   return (
     <main css={articleStyles}>
@@ -21,7 +33,9 @@ export const Article = memo(function Article({ post }: { post: Post }) {
           トップへ戻る
         </Link>
       </div>
-      <div className="Article-Content ProseMirror" dangerouslySetInnerHTML={{ __html: post.content }} />
+      <div className="Article-Content">
+        <EditorContent editor={editor} />
+      </div>
     </main>
   )
 })
@@ -64,6 +78,7 @@ function articleStyles(theme: Theme) {
       padding-top: 35px;
       padding-left: 5%;
       padding-right: 5%;
+      overflow: hidden;
     }
   `
 }

@@ -15,7 +15,7 @@ export function PostCreateDialog({
   const [data, setData] = useState<PostCreateInput>({
     title: "",
     slug: "",
-    content: "",
+    content: "null",
   })
 
   const setTitle = useCallback(

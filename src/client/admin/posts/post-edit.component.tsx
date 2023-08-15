@@ -15,12 +15,33 @@ export const ArticleEdit = memo(function Article({
   categories,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { update } = usePostEdit(post.id)
-  const [data, setData] = useState<PostUpdateInput>({
+
+  const [data, setData] = useState<
+    PostUpdateInput & {
+      editor?: Editor
+    }
+  >({
     title: post.title,
     slug: post.slug,
     categoryId: post.category?.id ?? "None",
     content: post.content,
   })
+
+  const editorRef = useRef<Editor>()
+  const saveTimer = useRef<NodeJS.Timeout>()
+
+  const startSaveTimer = useCallback(() => {
+    if (saveTimer.current) clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(
+      () =>
+        update({
+          ...data,
+          categoryId: data.categoryId === "None" ? undefined : data.categoryId,
+          content: JSON.stringify(editorRef.current?.getJSON()) ?? data.content,
+        }),
+      1000
+    )
+  }, [data, update])
 
   const setTitle = useCallback(
     (e: ChangeEvent<HTMLInputElement>) =>
@@ -41,7 +62,7 @@ export const ArticleEdit = memo(function Article({
   )
 
   const setCategoryId = useCallback(
-    (e: SelectChangeEvent<string>) =>
+    (e: SelectChangeEvent) =>
       setData((data) => ({
         ...data,
         categoryId: e.target.value,
@@ -49,22 +70,15 @@ export const ArticleEdit = memo(function Article({
     []
   )
 
-  const setContent = useCallback((editor: Editor) => {
-    setData((data) => ({ ...data, content: editor.getHTML() }))
-  }, [])
+  const setContent = useCallback(
+    (editor: Editor) => {
+      editorRef.current = editor
+      startSaveTimer()
+    },
+    [startSaveTimer]
+  )
 
-  const saveTimer = useRef<NodeJS.Timeout>()
-  useEffect(() => {
-    if (saveTimer.current) clearTimeout(saveTimer.current)
-    saveTimer.current = setTimeout(
-      () =>
-        update({
-          ...data,
-          categoryId: data.categoryId === "None" ? undefined : data.categoryId,
-        }),
-      1000
-    )
-  }, [data, update])
+  useEffect(() => startSaveTimer(), [data])
 
   const isSaving = useIsMutating({ mutationKey: ["posts", post.id] }) > 0
 

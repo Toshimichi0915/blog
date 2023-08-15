@@ -1,5 +1,5 @@
 import { memo, useCallback, useState } from "react"
-import { DashboardTable, DashboardCategoryTableRow } from "@/client/admin/dashboard/table.component"
+import { DashboardCategoryTableRow, DashboardTable } from "@/client/admin/dashboard/table.component"
 
 import { useCategories } from "@/client/admin/dashboard/category.hook"
 import { CategoryCreateDialog } from "@/client/admin/dashboard/category-create.component"

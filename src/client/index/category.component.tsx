@@ -1,4 +1,4 @@
-import { Post, Category } from "@/common/db.type"
+import { Category, Post } from "@/common/db.type"
 import { memo } from "react"
 import { Accordion, AccordionDetails, AccordionSummary, Theme } from "@mui/material"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"

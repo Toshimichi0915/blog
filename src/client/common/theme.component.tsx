@@ -17,6 +17,7 @@ export function GlobalTheme() {
 
       .ProseMirror {
         outline: none;
+        overflow: hidden;
       }
 
       h1 {

@@ -49,3 +49,10 @@ export const PostUpdateSchema = z.object({
 
 export type PostUpdateInput = z.input<typeof PostUpdateSchema>
 export type PostUpdateOutput = z.output<typeof PostUpdateSchema>
+
+export interface Asset {
+  id: string
+  url: string
+  width: number
+  height: number
+}

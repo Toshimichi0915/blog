@@ -36,3 +36,13 @@ model Post {
 
   @@map("posts")
 }
+
+model Asset {
+  id       String @id @default(cuid())
+  key      String
+  mimeType String @map("mime_type")
+  width    Int
+  height   Int
+
+  @@map("assets")
+}
