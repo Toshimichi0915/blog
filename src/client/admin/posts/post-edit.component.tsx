@@ -78,7 +78,7 @@ export const ArticleEdit = memo(function Article({
     [startSaveTimer]
   )
 
-  useEffect(() => startSaveTimer(), [data])
+  useEffect(() => startSaveTimer(), [data, startSaveTimer])
 
   const isSaving = useIsMutating({ mutationKey: ["posts", post.id] }) > 0
 
