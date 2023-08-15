@@ -13,6 +13,8 @@ export default {
       const bucket = new Bucket(stack, "assets")
       const site = new NextjsSite(stack, "site", {
         bind: [bucket],
+        warm: 1,
+        timeout: 60,
       })
 
       stack.addOutputs({
