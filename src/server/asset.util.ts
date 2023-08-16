@@ -4,6 +4,32 @@ import { Readable } from "stream"
 
 const s3 = new S3Client({})
 
+export function readAll(readable: Readable, maxSize?: number): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    let size = 0
+    const buffers: Buffer[] = []
+
+    readable.on("readable", () => {
+      let chunk
+      while ((chunk = readable.read())) {
+        buffers.push(chunk)
+        size += chunk.length
+        if (maxSize && size > maxSize) {
+          readable.destroy()
+          reject(new Error(`File is too large. Max size: ${maxSize}`))
+          return
+        }
+      }
+    })
+    readable.on("end", () => {
+      resolve(Buffer.concat(buffers))
+    })
+    readable.on("error", (err) => {
+      reject(err)
+    })
+  })
+}
+
 export async function uploadFile(ext: string, body: Buffer): Promise<string> {
   const date = new Date()
   const key = `assets/${date.getUTCFullYear()}/${date.getUTCMonth()}/${date.getUTCDate()}/${crypto.randomUUID()}.${ext}`

@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { Readable } from "stream"
 import { middleware, withMethods, withServerSession } from "next-pipe"
 import { authOptions } from "@/server/auth.util"
-import { uploadFile } from "@/server/asset.util"
+import { readAll, uploadFile } from "@/server/asset.util"
 import { Asset } from "@/common/db.type"
 import sizeOf from "image-size"
 
@@ -14,32 +14,6 @@ export const config = {
   api: {
     bodyParser: false,
   },
-}
-
-function readAll(readable: Readable, maxSize: number): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    let size = 0
-    const buffers: Buffer[] = []
-
-    readable.on("readable", () => {
-      let chunk
-      while ((chunk = readable.read())) {
-        buffers.push(chunk)
-        size += chunk.length
-        if (size > maxSize) {
-          readable.destroy()
-          reject(new Error(`File is too large. Max size: ${maxSize}`))
-          return
-        }
-      }
-    })
-    readable.on("end", () => {
-      resolve(Buffer.concat(buffers))
-    })
-    readable.on("error", (err) => {
-      reject(err)
-    })
-  })
 }
 
 export default middleware<NextApiRequest, NextApiResponse>()
