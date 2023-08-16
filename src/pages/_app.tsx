@@ -17,6 +17,10 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Blog</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta property="og:title" content="Toshimichi Blog" />
+        <meta property="og:site_name" content="Toshimichi Blog" />
+        <meta property="og:description" content="Toshimichiのブログです" />
+        <meta property="og:type" content="website" />
       </Head>
       <QueryClientProvider client={queryClient}>
         <SessionProvider>

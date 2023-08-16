@@ -10,6 +10,7 @@ import { TextStyle } from "@tiptap/extension-text-style"
 import { Color } from "@tiptap/extension-color"
 import { NextImage } from "@/client/common/tiptap.util"
 import { Youtube } from "@tiptap/extension-youtube"
+import Head from "next/head"
 
 export const Article = memo(function Article({ post }: { post: Post }) {
   const session = useSession()
@@ -21,22 +22,27 @@ export const Article = memo(function Article({ post }: { post: Post }) {
   })
 
   return (
-    <main css={articleStyles}>
-      <h1 className="Article-Title">{post.title}</h1>
-      <div className="Article-Nav">
-        {session.data && (
-          <Link href={`/admin/posts/${post.id}`} className="Article-NavLink">
-            編集する
+    <>
+      <Head>
+        <meta property="og:title" content={post.title} />
+      </Head>
+      <main css={articleStyles}>
+        <h1 className="Article-Title">{post.title}</h1>
+        <div className="Article-Nav">
+          {session.data && (
+            <Link href={`/admin/posts/${post.id}`} className="Article-NavLink">
+              編集する
+            </Link>
+          )}
+          <Link href="/" className="Article-NavLink">
+            トップへ戻る
           </Link>
-        )}
-        <Link href="/" className="Article-NavLink">
-          トップへ戻る
-        </Link>
-      </div>
-      <div className="Article-Content">
-        <EditorContent editor={editor} />
-      </div>
-    </main>
+        </div>
+        <div className="Article-Content">
+          <EditorContent editor={editor} />
+        </div>
+      </main>
+    </>
   )
 })
 
