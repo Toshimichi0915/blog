@@ -14,7 +14,6 @@ declare module "@tiptap/core" {
 
 function NextImageWrapper({ node }: NodeViewContentProps) {
   const width = `min(100%, ${node.attrs.width}px)`
-  console.log(width)
 
   return (
     <NodeViewWrapper className="next-image">
