@@ -5,6 +5,9 @@ const nextConfig = {
   compiler: {
     emotion: true,
   },
+  images: {
+    domains: ["blog.toshimichi.net", "blog-dev.toshimichi.net"],
+  },
 }
 
 module.exports = nextConfig
