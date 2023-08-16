@@ -9,6 +9,7 @@ import sizeOf from "image-size"
 
 const imageMimeTypes = ["image/png", "image/jpeg", "image/gif"]
 const maxImageSize = 5 * 1024 * 1024
+const baseUrl = process.env.NEXTAUTH_URL
 
 export const config = {
   api: {
@@ -59,7 +60,7 @@ export default middleware<NextApiRequest, NextApiResponse>()
 
         res.json({
           id: data.id,
-          url: `/api/assets/${data.id}`,
+          url: `${baseUrl}/api/assets/${data.id}`,
           width: dimensions.width,
           height: dimensions.height,
         } satisfies Asset)
