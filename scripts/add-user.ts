@@ -1,5 +1,5 @@
 import { prisma } from "@/server/db.util"
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 
 async function main() {
   const username = process.argv[2]
