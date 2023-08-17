@@ -23,7 +23,7 @@ export function useAssetUpload<T extends AssetUploadType>(
         method: "POST",
         headers: {
           "Content-Type": file.type,
-          "File-Name": file.name,
+          "X-File-Name": btoa(file.name),
         },
         body: file,
       })

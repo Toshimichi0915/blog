@@ -19,7 +19,7 @@ export default middleware<NextApiRequest, NextApiResponse>()
   .pipe(
     withMethods(({ post }) => {
       post().pipe(async (req, res) => {
-        const name = req.headers["file-name"]
+        const name = req.headers["x-file-name"]
         if (typeof name !== "string") {
           res.status(400).json({ error: "Bad Request" })
           return
@@ -45,7 +45,7 @@ export default middleware<NextApiRequest, NextApiResponse>()
           data: {
             mimeType,
             key,
-            name,
+            name: atob(name),
           },
         })
 
