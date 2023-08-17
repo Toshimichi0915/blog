@@ -45,7 +45,7 @@ export default middleware<NextApiRequest, NextApiResponse>()
           data: {
             mimeType,
             key,
-            name: atob(name),
+            name: decodeURIComponent(name),
           },
         })
 
