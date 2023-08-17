@@ -4,11 +4,9 @@ import { Readable } from "stream"
 import { middleware, withMethods, withServerSession } from "next-pipe"
 import { authOptions } from "@/server/auth.util"
 import { readAll, uploadFile } from "@/server/asset.util"
-import { Asset } from "@/common/db.type"
+import { ImageAsset } from "@/common/db.type"
 import sizeOf from "image-size"
 
-const imageMimeTypes = ["image/png", "image/jpeg", "image/gif"]
-const maxImageSize = 5 * 1024 * 1024
 const baseUrl = process.env.NEXTAUTH_URL
 
 export const config = {
@@ -28,14 +26,14 @@ export default middleware<NextApiRequest, NextApiResponse>()
           return
         }
 
-        if (!imageMimeTypes.includes(mimeType)) {
-          res.status(400).json({ error: `This Content-Type is not allowed. Allowed: ${imageMimeTypes.join(", ")}` })
+        if (!mimeType.startsWith("image/")) {
+          res.status(400).json({ error: `This Content-Type is not allowed.` })
           return
         }
 
         let buffer
         try {
-          buffer = await readAll(Readable.from(req), maxImageSize)
+          buffer = await readAll(Readable.from(req))
         } catch (e) {
           res.status(400).json({ error: (e as Error).message })
           return
@@ -49,7 +47,7 @@ export default middleware<NextApiRequest, NextApiResponse>()
 
         const key = await uploadFile(mimeType.split("/")[1], buffer)
 
-        const data = await prisma.asset.create({
+        const data = await prisma.imageAsset.create({
           data: {
             mimeType,
             key,
@@ -63,7 +61,7 @@ export default middleware<NextApiRequest, NextApiResponse>()
           url: `${baseUrl}/api/assets/${data.id}`,
           width: dimensions.width,
           height: dimensions.height,
-        } satisfies Asset)
+        } satisfies ImageAsset)
       })
     })
   )

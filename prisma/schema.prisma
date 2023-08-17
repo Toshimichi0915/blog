@@ -38,12 +38,21 @@ model Post {
   @@map("posts")
 }
 
-model Asset {
+model ImageAsset {
   id       String @id @default(cuid())
   key      String
   mimeType String @map("mime_type")
   width    Int
   height   Int
 
-  @@map("assets")
+  @@map("image_assets")
+}
+
+model BinaryAsset {
+  id       String @id @default(cuid())
+  key      String
+  mimeType String @map("mime_type")
+  name     String
+
+  @@map("binary_assets")
 }

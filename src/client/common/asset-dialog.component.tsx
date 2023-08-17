@@ -1,19 +1,23 @@
-import { ChangeEvent, memo, useCallback, useId } from "react"
+import { ChangeEvent, memo, PropsWithChildren, ReactNode, useCallback, useId } from "react"
 import { useAssetUpload } from "@/client/common/asset.hook"
 import { Dialog, DialogContent, DialogTitle, Theme } from "@mui/material"
-import { Asset } from "@/common/db.type"
 import { css } from "@emotion/react"
+import { AssetType, AssetUploadType } from "@/client/common/asset.type"
 
-export const ImageDialog = memo(function ImageDialog({
+interface AssetDialogProps<T extends AssetUploadType> {
+  type: T
+  open: boolean
+  onClose(): void
+  onUpload: (asset: AssetType<T>) => void
+}
+
+export const AssetDialog = memo(function AssetDialog<T extends AssetUploadType>({
+  type,
   open,
   onClose,
   onUpload,
-}: {
-  open: boolean
-  onClose(): void
-  onUpload: (asset: Asset) => void
-}) {
-  const { upload } = useAssetUpload(onUpload)
+}: PropsWithChildren<AssetDialogProps<T>>) {
+  const { upload } = useAssetUpload(type, onUpload)
   const fileId = useId()
 
   const uploadFile = useCallback(
@@ -27,24 +31,24 @@ export const ImageDialog = memo(function ImageDialog({
 
   return (
     <Dialog open={open} onClose={onClose} css={imageDialogStyles}>
-      <DialogTitle>Upload an image</DialogTitle>
+      <DialogTitle>Upload {type.toLowerCase()}</DialogTitle>
       <DialogContent>
-        <input type="file" onChange={uploadFile} className="ImageDialog-File" id={fileId} />
-        <label htmlFor={fileId} className="ImageDialog-Label">
-          Choose a file
+        <input type="file" onChange={uploadFile} className="AssetDialog-File" id={fileId} />
+        <label htmlFor={fileId} className="AssetDialog-Label">
+          Choose a file from your computer
         </label>
       </DialogContent>
     </Dialog>
   )
-})
+}) as <T extends AssetUploadType>(props: AssetDialogProps<T>) => ReactNode
 
 function imageDialogStyles(theme: Theme) {
   return css`
-    & .ImageDialog-File {
+    & .AssetDialog-File {
       display: none;
     }
 
-    & .ImageDialog-Label {
+    & .AssetDialog-Label {
       cursor: pointer;
       display: grid;
       place-items: center;

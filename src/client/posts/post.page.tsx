@@ -8,15 +8,16 @@ import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { TextStyle } from "@tiptap/extension-text-style"
 import { Color } from "@tiptap/extension-color"
-import { NextImage } from "@/client/common/tiptap.util"
+import { NextImage } from "@/client/common/tiptap/image.util"
 import { Youtube } from "@tiptap/extension-youtube"
 import Head from "next/head"
+import { File } from "@/client/common/tiptap/file.util"
 
 export const Article = memo(function Article({ post }: { post: Post }) {
   const session = useSession()
 
   const editor = useEditor({
-    extensions: [StarterKit, TextStyle, Color, NextImage, Youtube],
+    extensions: [StarterKit, TextStyle, Color, NextImage, File, Youtube],
     content: JSON.parse(post.content ?? null),
     editable: false,
   })

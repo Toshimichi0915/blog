@@ -2,12 +2,12 @@ import { mergeAttributes, Node } from "@tiptap/core"
 import Image from "next/image"
 import { NodeViewContentProps, NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react"
 import { css } from "@emotion/react"
-import { Asset } from "@/common/db.type"
+import { ImageAsset } from "@/common/db.type"
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     image: {
-      setImage: (options: { asset: Asset }) => ReturnType
+      setImage: (options: { asset: ImageAsset }) => ReturnType
     }
   }
 }
@@ -16,8 +16,8 @@ function NextImageWrapper({ node }: NodeViewContentProps) {
   const width = `min(100%, ${node.attrs.width}px)`
 
   return (
-    <NodeViewWrapper className="next-image">
-      <div css={() => nextImageWrapperStyles(width)} data-drag-handle={true}>
+    <NodeViewWrapper className="next-image" data-drag-handle={true}>
+      <div css={() => nextImageWrapperStyles(width)}>
         <Image
           src={node.attrs.src}
           alt=""

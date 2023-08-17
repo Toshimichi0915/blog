@@ -6,7 +6,7 @@ const nextConfig = {
     emotion: true,
   },
   images: {
-    domains: ["blog.toshimichi.net", "blog-dev.toshimichi.net"],
+    domains: ["blog.toshimichi.net", "blog-dev.toshimichi.net", "localhost"],
   },
 }
 

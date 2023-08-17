@@ -9,12 +9,14 @@ import { Color } from "@tiptap/extension-color"
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted"
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered"
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
-import { ImageDialog } from "@/client/common/image-dialog.component"
-import { Asset } from "@/common/db.type"
-import { NextImage } from "@/client/common/tiptap.util"
+import { AssetDialog } from "@/client/common/asset-dialog.component"
+import { BinaryAsset, ImageAsset } from "@/common/db.type"
+import { NextImage } from "@/client/common/tiptap/image.util"
 import { Youtube } from "@tiptap/extension-youtube"
 import { YoutubeDialog } from "@/client/common/youtube-dialog.component"
 import { YouTube } from "@mui/icons-material"
+import { File } from "@/client/common/tiptap/file.util"
+import AttachFileIcon from "@mui/icons-material/AttachFile"
 
 export const ArticleEditor = memo(function ArticleEditor({
   content,
@@ -24,7 +26,7 @@ export const ArticleEditor = memo(function ArticleEditor({
   onSave(editor: Editor): void
 }) {
   const editor = useEditor({
-    extensions: [StarterKit, TextStyle, Color, NextImage, Youtube],
+    extensions: [StarterKit, TextStyle, Color, NextImage, File, Youtube],
     content: JSON.parse(content ?? null),
     onUpdate() {
       const currentEditor = editor
@@ -70,11 +72,22 @@ export const ArticleEditor = memo(function ArticleEditor({
   const openImageDialog = useCallback(() => setImageDialogOpen(true), [])
   const closeImageDialog = useCallback(() => setImageDialogOpen(false), [])
   const insertImage = useCallback(
-    (asset: Asset) => {
+    (asset: ImageAsset) => {
       closeImageDialog()
       editor?.chain().focus().setImage({ asset }).run()
     },
     [closeImageDialog, editor]
+  )
+
+  const [fileDialogOpen, setFileDialogOpen] = useState(false)
+  const openFileDialog = useCallback(() => setFileDialogOpen(true), [])
+  const closeFileDialog = useCallback(() => setFileDialogOpen(false), [])
+  const insertFile = useCallback(
+    (asset: BinaryAsset) => {
+      closeFileDialog()
+      editor?.chain().focus().setFile({ asset }).run()
+    },
+    [closeFileDialog, editor]
   )
 
   const [youtubeDialogOpen, setYoutubeDialogOpen] = useState(false)
@@ -91,7 +104,8 @@ export const ArticleEditor = memo(function ArticleEditor({
   return (
     <>
       <YoutubeDialog open={youtubeDialogOpen} onClose={closeYoutubeDialog} onSave={insertYoutube} />
-      <ImageDialog open={imageDialogOpen} onClose={closeImageDialog} onUpload={insertImage} />
+      <AssetDialog type="IMAGE" open={imageDialogOpen} onClose={closeImageDialog} onUpload={insertImage} />
+      <AssetDialog type="BINARY" open={fileDialogOpen} onClose={closeFileDialog} onUpload={insertFile} />
       <div css={articleEditorStyles}>
         <div className="ArticleEditor-Tab">
           <button className={buttonClassName(hasP)} onClick={setP}>
@@ -126,6 +140,9 @@ export const ArticleEditor = memo(function ArticleEditor({
           <div />
           <button className={buttonClassName(false)} onClick={openImageDialog}>
             <InsertPhotoIcon />
+          </button>
+          <button className={buttonClassName(false)} onClick={openFileDialog}>
+            <AttachFileIcon />
           </button>
           <button className={buttonClassName(false)} onClick={openYoutubeDialog}>
             <YouTube />
