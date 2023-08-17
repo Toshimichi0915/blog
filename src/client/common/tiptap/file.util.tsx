@@ -2,7 +2,6 @@ import { BinaryAsset } from "@/common/db.type"
 import { NodeViewContentProps, NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react"
 import { css } from "@emotion/react"
 import { mergeAttributes, Node } from "@tiptap/core"
-import { useCallback } from "react"
 import { Theme } from "@mui/material"
 import AttachFileIcon from "@mui/icons-material/AttachFile"
 
