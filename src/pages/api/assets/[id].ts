@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { downloadFile, readAll } from "@/server/asset.util"
+import { downloadFile } from "@/server/asset.util"
 import { prisma } from "@/server/db.util"
 import { middleware, withMethods } from "next-pipe"
 import { withQuery } from "@/server/middleware.util"
+import { Readable } from "stream"
 
 export default middleware<NextApiRequest, NextApiResponse>()
   .pipe(withQuery("id"))
@@ -24,10 +25,9 @@ export default middleware<NextApiRequest, NextApiResponse>()
           return
         }
 
-        let buffer: Buffer
+        let reader: Readable
         try {
-          const reader = await downloadFile(asset.key)
-          buffer = await readAll(reader)
+          reader = await downloadFile(asset.key)
         } catch (e) {
           res.status(404).json({ message: "Not Found" })
           return
@@ -35,8 +35,7 @@ export default middleware<NextApiRequest, NextApiResponse>()
 
         res.setHeader("Content-Type", asset.mimeType)
         res.setHeader("Cache-Control", "public, max-age=31536000, immutable")
-        res.write(buffer, "binary")
-        res.end(null, "binary")
+        reader.pipe(res)
       })
     })
   )
