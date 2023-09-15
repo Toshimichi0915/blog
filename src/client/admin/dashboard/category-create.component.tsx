@@ -1,9 +1,9 @@
 import { Button, Dialog, DialogContent, DialogTitle, TextField } from "@mui/material"
 import { CategoryCreateInput } from "@/common/db.type"
-import { ChangeEvent, useCallback, useState } from "react"
+import { ChangeEvent, memo, useCallback, useState } from "react"
 import { css } from "@emotion/react"
 
-export function CategoryCreateDialog({
+export const CategoryCreateDialog = memo(function CategoryCreateDialog({
   open,
   onClose,
   onCreate,
@@ -28,7 +28,7 @@ export function CategoryCreateDialog({
       </DialogContent>
     </Dialog>
   )
-}
+})
 
 function categoryCreateDialogStyles() {
   return css`

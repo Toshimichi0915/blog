@@ -1,9 +1,9 @@
 import { Button, Dialog, DialogContent, DialogTitle, TextField } from "@mui/material"
 import { Category, CategoryUpdateInput } from "@/common/db.type"
-import { ChangeEvent, useCallback, useState } from "react"
+import { ChangeEvent, memo, useCallback, useState } from "react"
 import { css } from "@emotion/react"
 
-export function CategoryEditDialog({
+export const CategoryEditDialog = memo(function CategoryEditDialog({
   open,
   onClose,
   onUpdate,
@@ -32,7 +32,7 @@ export function CategoryEditDialog({
       </DialogContent>
     </Dialog>
   )
-}
+})
 
 function categoryEditDialogStyles() {
   return css`

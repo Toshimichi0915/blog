@@ -48,9 +48,6 @@ export function GlobalTheme() {
       h4 {
         font-size: ${theme.typography.h4.fontSize};
       }
-
-      @media (max-width: 600px) {
-      }
     `}</style>
   )
 }

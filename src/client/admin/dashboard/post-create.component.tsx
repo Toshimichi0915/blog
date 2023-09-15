@@ -1,9 +1,9 @@
 import { PostCreateInput } from "@/common/db.type"
-import { ChangeEvent, useCallback, useState } from "react"
+import { ChangeEvent, memo, useCallback, useState } from "react"
 import { Button, Dialog, DialogContent, DialogTitle, TextField } from "@mui/material"
 import { css } from "@emotion/react"
 
-export function PostCreateDialog({
+export const PostCreateDialog = memo(function PostCreateDialog({
   open,
   onClose,
   onCreate,
@@ -43,7 +43,7 @@ export function PostCreateDialog({
       </DialogContent>
     </Dialog>
   )
-}
+})
 
 function categoryCreateDialogStyles() {
   return css`

@@ -10,7 +10,7 @@ import { useIsMutating } from "@tanstack/react-query"
 import { InferGetServerSidePropsType } from "next"
 import { getServerSideProps } from "@/pages/admin/posts/[id]"
 
-export const ArticleEdit = memo(function Article({
+export const ArticleEdit = memo(function ArticleEdit({
   post,
   categories,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {

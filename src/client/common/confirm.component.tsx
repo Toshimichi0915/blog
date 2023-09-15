@@ -1,8 +1,8 @@
 import { Dialog, DialogContent, DialogTitle, Theme } from "@mui/material"
-import { useCallback } from "react"
+import { memo, useCallback } from "react"
 import { css } from "@emotion/react"
 
-export function ConfirmDialog({
+export const ConfirmDialog = memo(function ConfirmDialog({
   open,
   onClose,
   action,
@@ -28,7 +28,7 @@ export function ConfirmDialog({
       </DialogContent>
     </Dialog>
   )
-}
+})
 
 function confirmDialogStyles(theme: Theme) {
   return css`
