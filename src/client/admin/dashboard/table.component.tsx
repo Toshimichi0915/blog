@@ -2,15 +2,16 @@ import { memo, ReactNode, useCallback, useState } from "react"
 import { Theme } from "@mui/material"
 import { css } from "@emotion/react"
 import { ConfirmDialog } from "@/client/common/confirm.component"
-import { Category, Post } from "@/common/db.type"
-import { useCategoryEdit } from "@/client/admin/dashboard/category.hook"
+import { Category, CategoryUpdateInput, Post } from "@/common/db.type"
 import { CategoryEditDialog } from "@/client/admin/dashboard/category-edit.component"
 import AddIcon from "@mui/icons-material/Add"
-import { usePostEdit } from "@/client/admin/dashboard/post.hook"
 import Link from "next/link"
+import { useDeleteCategory, useUpdateCategory } from "@/client/admin/dashboard/category.hook"
+import { useDeletePost } from "@/client/admin/dashboard/post.hook"
 
 export const DashboardPostTableRow = memo(function DashboardPostTableRow({ post }: { post: Post }) {
-  const { delete: del } = usePostEdit(post.id)
+  const deleteMutation = useDeletePost()
+  const deletePost = useCallback(() => deleteMutation.mutate(post.id), [deleteMutation, post.id])
 
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const openConfirmDialog = useCallback(() => setConfirmDialogOpen(true), [])
@@ -22,7 +23,7 @@ export const DashboardPostTableRow = memo(function DashboardPostTableRow({ post 
         open={confirmDialogOpen}
         onClose={closeConfirmDialog}
         action={`delete ${post.title}`}
-        onExecute={del}
+        onExecute={deletePost}
       />
       <div css={dashboardTableRowStyles}>
         <p>{post.title}</p>
@@ -40,7 +41,14 @@ export const DashboardPostTableRow = memo(function DashboardPostTableRow({ post 
 })
 
 export const DashboardCategoryTableRow = memo(function DashboardCategoryTableRow({ category }: { category: Category }) {
-  const { update, delete: del } = useCategoryEdit(category.id)
+  const updateMutation = useUpdateCategory()
+  const updateCategory = useCallback(
+    (data: CategoryUpdateInput) => updateMutation.mutate({ id: category.id, data }),
+    [updateMutation, category.id]
+  )
+
+  const deleteMutation = useDeleteCategory()
+  const deleteCategory = useCallback(() => deleteMutation.mutate(category.id), [deleteMutation, category.id])
 
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const openEditDialog = useCallback(() => setEditDialogOpen(true), [])
@@ -52,12 +60,17 @@ export const DashboardCategoryTableRow = memo(function DashboardCategoryTableRow
 
   return (
     <>
-      <CategoryEditDialog open={editDialogOpen} onClose={closeEditDialog} onUpdate={update} category={category} />
+      <CategoryEditDialog
+        open={editDialogOpen}
+        onClose={closeEditDialog}
+        onUpdate={updateCategory}
+        category={category}
+      />
       <ConfirmDialog
         open={confirmDialogOpen}
         onClose={closeConfirmDialog}
         action={`delete ${category.name}`}
-        onExecute={del}
+        onExecute={deleteCategory}
       />
       <div css={dashboardTableRowStyles}>
         <p>{category.name}</p>

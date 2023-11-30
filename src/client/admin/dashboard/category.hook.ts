@@ -1,108 +1,72 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Category, CategoryCreateInput, CategoryUpdateInput } from "@/common/db.type"
-import { useContext, useMemo } from "react"
-import { InitialDataContext } from "@/client/admin/dashboard/initial-data.store"
+import { createCategory, getCategories, updateCategory } from "@/client/admin/dashboard/category.util"
+import { useInitialData } from "@/client/admin/dashboard/initial-data.store"
+import { Prisma } from ".prisma/client"
+import CategoryCreateInput = Prisma.CategoryCreateInput
+import { Category, CategoryUpdateInput } from "@/common/db.type"
 
-export interface CategoryEdit {
-  update(data: CategoryUpdateInput): void
+export function useCategories() {
+  const { categories } = useInitialData()
 
-  delete(): void
+  return useQuery({
+    queryKey: ["categories"],
+    async queryFn() {
+      return await getCategories()
+    },
+    initialData: categories,
+  })
 }
 
-export function useCategoryEdit(id: string): CategoryEdit {
+export function useCreateCategory() {
   const queryClient = useQueryClient()
-  const { mutate: update } = useMutation(
-    async (data: CategoryUpdateInput) => {
-      const response = await fetch(`/api/admin/categories/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-
-      if (!response.ok) throw new Error("Could not update category")
-      return (await response.json()) as Category
+  return useMutation({
+    mutationKey: ["create-category"],
+    async mutationFn(data: CategoryCreateInput) {
+      return await createCategory(data)
     },
-    {
-      mutationKey: ["categories", id],
-      async onSuccess() {
-        await queryClient.invalidateQueries(["categories"])
-      },
-    }
-  )
+    onMutate(data) {
+      queryClient.setQueryData(["categories"], (old: Category[] | undefined) => {
+        if (!old) return old
+        return [...old, data]
+      })
+    },
+  })
+}
 
-  const { mutate: del } = useMutation(
-    async () => {
-      const response = await fetch(`/api/admin/categories/${id}`, {
+export function useUpdateCategory() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationKey: ["update-category"],
+    async mutationFn({ id, data }: { id: string; data: CategoryUpdateInput }) {
+      return await updateCategory(id, data)
+    },
+    onMutate(data) {
+      queryClient.setQueryData(["categories"], (old: Category[] | undefined) => {
+        if (!old) return old
+        const index = old.findIndex((c) => c.id === data.id)
+        if (index === -1) return old
+        return [...old.slice(0, index), data, ...old.slice(index + 1)]
+      })
+    },
+  })
+}
+
+export function useDeleteCategory() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationKey: ["delete-category"],
+    async mutationFn(id: string) {
+      return await fetch(`/api/admin/categories/${id}`, {
         method: "DELETE",
       })
-
-      if (!response.ok) throw new Error("Could not delete category")
-      return (await response.json()) as Category
     },
-    {
-      mutationKey: ["categories", id],
-      async onSuccess() {
-        await queryClient.invalidateQueries(["categories"])
-      },
-    }
-  )
-
-  return useMemo(
-    () => ({
-      update,
-      delete: del,
-    }),
-    [del, update]
-  )
-}
-
-export interface CategoriesEdit {
-  create(data: CategoryCreateInput): void
-
-  categories: Category[]
-}
-
-export function useCategories(): CategoriesEdit {
-  const queryClient = useQueryClient()
-  const { categories } = useContext(InitialDataContext)
-
-  const { data } = useQuery(
-    ["categories"],
-    async () => {
-      const response = await fetch("/api/admin/categories")
-      if (!response.ok) throw new Error("Could not fetch categories")
-
-      return (await response.json()) as Category[]
-    },
-    {
-      initialData: categories,
-    }
-  )
-
-  const { mutate } = useMutation(
-    async (data: CategoryCreateInput) => {
-      const response = await fetch("/api/admin/categories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+    onMutate(id) {
+      queryClient.setQueryData(["categories"], (old: Category[] | undefined) => {
+        if (!old) return old
+        const index = old.findIndex((c) => c.id === id)
+        if (index === -1) return old
+        return [...old.slice(0, index), ...old.slice(index + 1)]
       })
-
-      if (!response.ok) throw new Error("Could not create category")
-      return (await response.json()) as Category
     },
-    {
-      mutationKey: ["categories"],
-      async onSuccess() {
-        await queryClient.invalidateQueries(["categories"])
-      },
-    }
-  )
-
-  return useMemo(
-    () => ({
-      create: mutate,
-      categories: data,
-    }),
-    [data, mutate]
-  )
+  })
 }

@@ -5,22 +5,17 @@ import { LinearProgress, MenuItem, Select, SelectChangeEvent, TextField, Theme }
 import { css } from "@emotion/react"
 import { ArticleEditor } from "@/client/common/article-editor.component"
 import { Editor } from "@tiptap/react"
-import { usePostEdit } from "@/client/admin/dashboard/post.hook"
-import { useIsMutating } from "@tanstack/react-query"
 import { InferGetServerSidePropsType } from "next"
 import { getServerSideProps } from "@/pages/admin/posts/[id]"
+import { useUpdatePost } from "@/client/admin/dashboard/post.hook"
 
 export const ArticleEdit = memo(function ArticleEdit({
   post,
   categories,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { update } = usePostEdit(post.id)
+  const { mutate: updatePost, isPending } = useUpdatePost()
 
-  const [data, setData] = useState<
-    PostUpdateInput & {
-      editor?: Editor
-    }
-  >({
+  const [data, setData] = useState<PostUpdateInput & { editor?: Editor }>({
     title: post.title,
     slug: post.slug,
     categoryId: post.category?.id ?? "None",
@@ -34,14 +29,18 @@ export const ArticleEdit = memo(function ArticleEdit({
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(
       () =>
-        update({
-          ...data,
-          categoryId: data.categoryId === "None" ? undefined : data.categoryId,
-          content: JSON.stringify(editorRef.current?.getJSON()) ?? data.content,
+        updatePost({
+          id: post.id,
+
+          data: {
+            ...data,
+            categoryId: data.categoryId === "None" ? undefined : data.categoryId,
+            content: JSON.stringify(editorRef.current?.getJSON()) ?? data.content,
+          },
         }),
       1000
     )
-  }, [data, update])
+  }, [data, post.id, updatePost])
 
   const setTitle = useCallback(
     (e: ChangeEvent<HTMLInputElement>) =>
@@ -80,8 +79,6 @@ export const ArticleEdit = memo(function ArticleEdit({
 
   useEffect(() => startSaveTimer(), [data, startSaveTimer])
 
-  const isSaving = useIsMutating({ mutationKey: ["posts", post.id] }) > 0
-
   return (
     <main css={articleStyles}>
       <h1 className="ArticleEdit-Title">{data.title || "No title :("}</h1>
@@ -97,7 +94,7 @@ export const ArticleEdit = memo(function ArticleEdit({
         </Link>
       </div>
       <div className="ArticleEdit-Content">
-        {isSaving ? <LinearProgress /> : <div className="ArticleEdit-ProgressPlaceholder" />}
+        {isPending ? <LinearProgress /> : <div className="ArticleEdit-ProgressPlaceholder" />}
         <div className="ArticleEdit-Meta">
           <TextField
             className="ArticleEdit-MetaTitle"

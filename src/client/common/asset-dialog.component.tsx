@@ -1,13 +1,15 @@
 import { ChangeEvent, memo, PropsWithChildren, ReactNode, useCallback, useId } from "react"
-import { useAssetUpload } from "@/client/common/asset.hook"
 import { Dialog, DialogContent, DialogTitle, Theme } from "@mui/material"
 import { css } from "@emotion/react"
 import { AssetType, AssetUploadType } from "@/client/common/asset.type"
+import { uploadAsset } from "@/client/common/asset.util"
 
 interface AssetDialogProps<T extends AssetUploadType> {
   type: T
   open: boolean
+
   onClose(): void
+
   onUpload: (asset: AssetType<T>) => void
 }
 
@@ -17,21 +19,21 @@ export const AssetDialog = memo(function AssetDialog<T extends AssetUploadType>(
   onClose,
   onUpload,
 }: PropsWithChildren<AssetDialogProps<T>>) {
-  const { upload } = useAssetUpload(type, onUpload)
   const fileId = useId()
 
   const uploadFile = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
+    async (e: ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files
       if (!files || files.length === 0) return
-      upload(files[0])
+      const asset = await uploadAsset(type, files[0])
+      onUpload(asset)
     },
-    [upload]
+    [onUpload, type]
   )
 
   return (
     <Dialog open={open} onClose={onClose} css={imageDialogStyles}>
-      <DialogTitle>Upload {type.toLowerCase()}</DialogTitle>
+      <DialogTitle>Upload {type === "IMAGE" ? "an image" : "a file"}</DialogTitle>
       <DialogContent>
         <input type="file" onChange={uploadFile} className="AssetDialog-File" id={fileId} />
         <label htmlFor={fileId} className="AssetDialog-Label">

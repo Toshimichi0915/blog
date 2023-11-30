@@ -21,7 +21,7 @@ export const YoutubeDialog = memo(function YoutubeDialog({
 
   return (
     <Dialog open={open} onClose={onClose} css={youtubeDialogStyles}>
-      <DialogTitle>Insert a Youtube video</DialogTitle>
+      <DialogTitle>Insert a Youtube video URL</DialogTitle>
       <DialogContent className="YoutubeDialog-Content">
         <TextField label="Youtube URL" value={url} onChange={updateUrl} margin="dense" />
         <Button onClick={save}>OK</Button>

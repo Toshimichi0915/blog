@@ -14,6 +14,7 @@ export const CategoryCreateDialog = memo(function CategoryCreateDialog({
 }) {
   const [data, setData] = useState<CategoryCreateInput>({ name: "" })
   const setName = useCallback((e: ChangeEvent<HTMLInputElement>) => setData({ name: e.target.value }), [setData])
+
   const createAndClose = useCallback(() => {
     onCreate(data)
     onClose()
