@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createCategory, getCategories, updateCategory } from "@/client/admin/dashboard/category.util"
 import { useInitialData } from "@/client/admin/dashboard/initial-data.store"
 import { Prisma } from ".prisma/client"
-import CategoryCreateInput = Prisma.CategoryCreateInput
 import { Category, CategoryUpdateInput } from "@/common/db.type"
+import CategoryCreateInput = Prisma.CategoryCreateInput
 
 export function useCategories() {
   const { categories } = useInitialData()
@@ -24,10 +24,9 @@ export function useCreateCategory() {
     async mutationFn(data: CategoryCreateInput) {
       return await createCategory(data)
     },
-    onMutate(data) {
-      queryClient.setQueryData(["categories"], (old: Category[] | undefined) => {
-        if (!old) return old
-        return [...old, data]
+    async onMutate() {
+      await queryClient.invalidateQueries({
+        queryKey: ["categories"],
       })
     },
   })
