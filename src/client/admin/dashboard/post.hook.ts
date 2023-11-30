@@ -21,7 +21,7 @@ export function useCreatePost() {
     async mutationFn(data: PostCreateInput) {
       return await createPost(data)
     },
-    async onMutate() {
+    async onSuccess() {
       await queryClient.invalidateQueries({
         queryKey: ["posts"],
       })

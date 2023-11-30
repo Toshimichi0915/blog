@@ -24,7 +24,7 @@ export function useCreateCategory() {
     async mutationFn(data: CategoryCreateInput) {
       return await createCategory(data)
     },
-    async onMutate() {
+    async onSuccess() {
       await queryClient.invalidateQueries({
         queryKey: ["categories"],
       })
