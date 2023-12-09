@@ -3,6 +3,7 @@ import { Editor, EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { Theme } from "@mui/material"
 import { css } from "@emotion/react"
+import FormatStrikethroughIcon from "@mui/icons-material/FormatStrikethrough"
 import InvertColorsOffIcon from "@mui/icons-material/InvertColorsOff"
 import { TextStyle } from "@tiptap/extension-text-style"
 import { Color } from "@tiptap/extension-color"
@@ -56,6 +57,9 @@ export const ArticleEditor = memo(function ArticleEditor({
 
   const hasItalic = editor?.isActive("italic")
   const setItalic = () => editor?.chain().focus().toggleItalic().run()
+
+  const hasStrike = editor?.isActive("strike")
+  const setStrike = () => editor?.chain().focus().toggleStrike().run()
 
   const clear = () => editor?.chain().focus().unsetAllMarks().run()
 
@@ -125,6 +129,9 @@ export const ArticleEditor = memo(function ArticleEditor({
           </button>
           <button className={buttonClassName(hasItalic)} onClick={setItalic}>
             I
+          </button>
+          <button className={buttonClassName(hasStrike)} onClick={setStrike}>
+            <FormatStrikethroughIcon />
           </button>
           <input type="color" className={buttonClassName(false)} value={color} onInput={setColor} />
           <button className="ArticleEditor-Button" onClick={clear}>
