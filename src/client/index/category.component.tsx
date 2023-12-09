@@ -7,7 +7,7 @@ import Link from "next/link"
 
 export const IndexCategory = memo(function IndexCategory({ category, posts }: { category: Category; posts: Post[] }) {
   return (
-    <Accordion css={indexCategoryStyles} disableGutters elevation={0} square>
+    <Accordion css={indexCategoryStyles} disableGutters elevation={0} defaultExpanded={true} square>
       <AccordionSummary className="IndexCategory-Summary" expandIcon={<ExpandMoreIcon />}>
         {category.name}
       </AccordionSummary>
